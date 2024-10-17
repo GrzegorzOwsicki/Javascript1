@@ -1,39 +1,46 @@
 (function () {
-  var ex1_button = document.getElementById("ex1_button");
-  var ex1_content = document.getElementById("ex1_content");
+  const example = document.getElementById('example')
+  const cw1 = document.getElementById('cw1')
+  const cw2 = document.getElementById('cw2')
+  const cw3 = document.getElementById('cw3')
+  const answer = document.getElementById('answer')
 
+  example.addEventListener("click", function () {
+    fetch('https://jsonplaceholder.typicode.com/posts')
+      .then(response => response.json())
+      .then(array => {
+        
+        console.log(array)
+        answer.innerHTML = JSON.stringify(array);
+      })
+  })
+
+  cw1.addEventListener("click", function () {
+    //TODO
+    fetch('https://jsonplaceholder.typicode.com/posts')
+    .then(response => response.json())
+    .then(posts => {
+      answer.innerHTML='';
+      const ul = document.createElement('ul');
+
+      posts.forEach(post => {
+
+        const li = document.createElement('li');
+        li.innerHTML = `<strong> User : ${post.id} ${post.title} </strong><br> ${post.body}`;
+        ul.appendChild(li);
+        
+      });
+      answer.appendChild(ul)
+      
+    });
+  });
+
+  cw2.addEventListener("click", function () {
+    //TODO
+  })
+
+  cw3.addEventListener("click", function () {
+    //TODO
+  })
 
 })();
-ex1_button.onclick = function () {
-  var tabela = [];
-
-  for (var i = 0; i <= 9; i++) {
-    tabela.push(i);
-  }
-
-  ex1_content.innerHTML = tabela.toString();
-};
-
-var ex2_text = document.getElementById("ex2_text");
-var ex2_content = document.getElementById("ex2_content");
-
-ex2_text.addEventListener("input", function() {
-  var phoneNumber = ex2_text.value;
-
-  if (phoneNumber.length !== 9) {
-    ex2_content.innerHTML = "Długość numeru musi być równa 9";
-    return;
-  }
-
-  if (/[a-zA-Z]/.test(phoneNumber)) {
-    ex2_content.innerHTML = "Numer nie może zawierać liter";
-    return;
-  }
-
-  if (/[^0-9]/.test(phoneNumber)) {
-    ex2_content.innerHTML = "Numer nie może zawierać znaków specjalnych";
-    return;
-  }
-
-  ex2_content.innerHTML = "Numer telefonu jest poprawny";
-});
