@@ -2,3 +2,11 @@ html {
   height: 100%;
   width: 100%;
 }
+
+body{
+  background-color: blueviolet;
+}
+
+ul{
+  color: chartreuse;
+}
