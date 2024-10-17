@@ -17,8 +17,7 @@
 
   cw1.addEventListener("click", function () {
     //TODO
-    answer.innerHTML=('Loading..');
-
+    answer.innerHTML=('loading')
     fetch('https://jsonplaceholder.typicode.com/posts')
     .then(response => response.json())
     .then(posts => {
@@ -39,10 +38,42 @@
 
   cw2.addEventListener("click", function () {
     //TODO
-  })
+    answer.innerHTML=('Loading..');
+
+    fetch('https://jsonplaceholder.typicode.com/posts/1')
+    .then(response => response.json())
+    .then(post => {
+      console.log(post)
+      answer.innerHTML='';
+      const postDiv = document.createElement('div')
+      postDiv.innerHTML = `<strong>${post.title}</strong>${post.body}`;
+
+      answer.appendChild(postDiv);
+    });
+  });
 
   cw3.addEventListener("click", function () {
     //TODO
+    const createPost = {
+      title : 'new Post',
+      body : 'lorem ipsum',
+      userId : 1
+    };
+    
+    fetch('https://jsonplaceholder.typicode.com/posts',{
+      method : 'POST',
+      headers: {
+        'Content-Type' : 'application/json'
+      },
+      body: JSON.stringify(createPost)
+    })
+    
+    .then(response => response.json())
+    .then(data => {
+      console.log(data)
+      answer.innerHTML=`Dodano nowy post o nazwie = ${data.id}`;
+      postDiv.innerHTML = `<strong>${post.title}</strong>${post.body}`;
+    });
   })
 
 })();
