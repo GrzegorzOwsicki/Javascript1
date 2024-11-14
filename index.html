@@ -1,37 +1,91 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" href="style.css"/>
-    <title>repl.it</title>
-  </head>
-  <body>
-    <div>
-      <div id="ex1" class="ex">
-        <h5>Ex1 - OnClick</h5>
-        <button id="ex1_button">Click me</button>
-        <div id="ex1_content"></div>
-      </div>
-
-      <div id="ex2" class="ex">
-        <h5>Ex2 - Validation</h5>
-        <input type="text" id="ex2_text" placeholder="phone number" />
-        <div id="ex2_content"></div>
-      </div>
-
-      <div id="ex3" class="ex">
-        <h5>Ex3 - Drag&Drop</h5>
-        <div>
-          <div id="ex3_one">
-            <div id="ex3_element">Content</div>
-          </div>
-          <div id="ex3_two"></div>
-        </div>
-      </div>
-
-
-    </div>
-    <script src="script.js"></script>
-  </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Country Search by Capital</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+        table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 80%;
+            max-width: 600px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            margin-top: 10px;
+            width: 100px;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+ 
+    <h2>Search Country by Capital</h2>
+    <input type="text" id="capitalInput">
+    <button onclick="fetchCountryData()">Search</button>
+ 
+    <table id="countryTable" style="display: none;">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Capital</th>
+                <th>Population</th>
+                <th>Region</th>
+                <th>Subregion</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+ 
+    <script>
+        async function fetchCountryData() {
+            const capital = document.getElementById('capitalInput').value.trim();
+            if (!capital) {
+                alert("Please enter a capital name.");
+                return;
+            }
+ 
+            const response = await fetch(`https://restcountries.com/v3.1/capital/${capital}`);
+            const data = await response.json();
+ 
+            console.log(data)
+            const table = document.getElementById('countryTable');
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = ''; 
+            if (response.ok && data.length > 0) {
+                const country = data[0]; 
+                const row = `
+                    <tr>
+                        <td>${country.name.common}</td>
+                        <td>${country.capital ? country.capital[0] : 'N/A'}</td>
+                        <td>${country.population.toLocaleString()}</td>
+                        <td>${country.region}</td>
+                        <td>${country.subregion}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML = row;
+                table.style.display = 'table';
+            } else {
+                alert("Country not found.");
+                table.style.display = 'none';
+            }
+        }
+    </script>
+ 
+</body>
 </html>
+ 

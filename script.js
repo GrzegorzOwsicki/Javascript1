@@ -1,39 +1,40 @@
 (function () {
-  var ex1_button = document.getElementById("ex1_button");
-  var ex1_content = document.getElementById("ex1_content");
+  const example = document.getElementById('example')
+  const cw1 = document.getElementById('cw1')
+  const cw2 = document.getElementById('cw2')
+  const cw3 = document.getElementById('cw3')
+  const answer = document.getElementById('answer')
 
+  async function fetchCountryData() {
+    const capital = document.getElementById('capitalInput').value.trim();
+    if (!capital) {
+        alert("Please enter a capital name.");
+        return;
+    }
 
-})();
-ex1_button.onclick = function () {
-  var tabela = [];
+    const response = await fetch(`https://restcountries.com/v3.1/capital/${capital}`);
+    const data = await response.json();
 
-  for (var i = 0; i <= 9; i++) {
-    tabela.push(i);
+    console.log(data)
+    const table = document.getElementById('countryTable');
+    const tableBody = document.getElementById('tableBody');
+    tableBody.innerHTML = ''; 
+    if (response.ok && data.length > 0) {
+        const country = data[0]; 
+        const row = `
+            <tr>
+                <td>${country.name.common}</td>
+                <td>${country.capital ? country.capital[0] : 'N/A'}</td>
+                <td>${country.population.toLocaleString()}</td>
+                <td>${country.region}</td>
+                <td>${country.subregion}</td>
+            </tr>
+        `;
+        tableBody.innerHTML = row;
+        table.style.display = 'table';
+    } else {
+        alert("Country not found.");
+        table.style.display = 'none';
+    }
   }
-
-  ex1_content.innerHTML = tabela.toString();
-};
-
-var ex2_text = document.getElementById("ex2_text");
-var ex2_content = document.getElementById("ex2_content");
-
-ex2_text.addEventListener("input", function() {
-  var phoneNumber = ex2_text.value;
-
-  if (phoneNumber.length !== 9) {
-    ex2_content.innerHTML = "Długość numeru musi być równa 9";
-    return;
-  }
-
-  if (/[a-zA-Z]/.test(phoneNumber)) {
-    ex2_content.innerHTML = "Numer nie może zawierać liter";
-    return;
-  }
-
-  if (/[^0-9]/.test(phoneNumber)) {
-    ex2_content.innerHTML = "Numer nie może zawierać znaków specjalnych";
-    return;
-  }
-
-  ex2_content.innerHTML = "Numer telefonu jest poprawny";
-});
+})
