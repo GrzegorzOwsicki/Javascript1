@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NOAA Stations Data</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOAA Datasets</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,66 +19,72 @@
             max-width: 800px;
         }
         th, td {
-            padding: 8px;
+            padding: 18px;
             border: 1px solid #ddd;
             text-align: center;
         }
         th {
             background-color: #f2f2f2;
         }
+        button {
+            padding: 10px;
+            margin-top: 20px;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
 
-    <h2>Stations Data</h2>
-    <button onclick="fetchStationsData()">Load Stations Data</button>
+    <h2>Datasets</h2>
+    <button onclick="fetchDatasets()">Load Datasets</button>
 
-    <table id="stationsTable" style="display: none;">
+    <table id="datasetsTable" style="display: none;">
         <thead>
             <tr>
-                <th>Station ID</th>
+                <th>Dataset ID</th>
                 <th>Name</th>
-                <th>State</th>
-                <th>Latitude</th>
-                <th>Longitude</th>
+                <th>Start Date</th>
+                <th>End Date</th>
             </tr>
         </thead>
         <tbody id="tableBody"></tbody>
     </table>
 
     <script>
-        async function fetchStationsData() {
-            const table = document.getElementById('stationsTable');
+        async function fetchDatasets() {
+            const table = document.getElementById('datasetsTable');
             const tableBody = document.getElementById('tableBody');
             tableBody.innerHTML = ''; 
 
             try {
-                const response = await fetch("https://www.ncei.noaa.gov/cdo-web/api/v2/stations", {
+                const response = await fetch("https://www.ncei.noaa.gov/cdo-web/api/v2/datasets", {
                     headers: {
                         'token': 'fVNoeJAttptGtGSqRfcoASxKbSmWOnSp'
                     }
                 });
-                
+
+                if (!response.ok) {
+                    throw new Error("Error fetching datasets.");
+                }
 
                 const data = await response.json();
-                console.log(data)
                 
                 if (data.results && data.results.length > 0) {
-                    data.results.forEach(station => {
+                    data.results.forEach(dataset => {
                         const row = `
                             <tr>
-                                <td>${station.id}</td>
-                                <td>${station.name || 'N/A'}</td>
-                                <td>${station.state}</td>
-                                <td>${station.latitude || 'N/A'}</td>
-                                <td>${station.longitude || 'N/A'}</td>
+                                <td>${dataset.id}</td>
+                                <td>${dataset.name}</td>
+                                <td>${dataset.mindate}</td>
+                                <td>${dataset.maxdate}</td>
+                               
                             </tr>
                         `;
                         tableBody.insertAdjacentHTML('beforeend', row);
                     });
                     table.style.display = 'table';
                 } else {
-                    alert("No station data found.");
+                    alert("No datasets found.");
                 }
             } catch (error) {
                 alert(error.message);
