@@ -1,40 +1,38 @@
-(function () {
-  const example = document.getElementById('example')
-  const cw1 = document.getElementById('cw1')
-  const cw2 = document.getElementById('cw2')
-  const cw3 = document.getElementById('cw3')
-  const answer = document.getElementById('answer')
+async function fetchStationsData() {
+  const table = document.getElementById('stationsTable');
+  const tableBody = document.getElementById('tableBody');
+  tableBody.innerHTML = ''; 
 
-  async function fetchCountryData() {
-    const capital = document.getElementById('capitalInput').value.trim();
-    if (!capital) {
-        alert("Please enter a capital name.");
-        return;
-    }
+  try {
+      const response = await fetch("https://www.ncei.noaa.gov/cdo-web/api/v2/stations", {
+          headers: {
+              'token': 'wbLUFAbsHbjDhAJmmHYiVxQuMtMaAcvc'
+          }
+      });
 
-    const response = await fetch(`https://restcountries.com/v3.1/capital/${capital}`);
-    const data = await response.json();
 
-    console.log(data)
-    const table = document.getElementById('countryTable');
-    const tableBody = document.getElementById('tableBody');
-    tableBody.innerHTML = ''; 
-    if (response.ok && data.length > 0) {
-        const country = data[0]; 
-        const row = `
-            <tr>
-                <td>${country.name.common}</td>
-                <td>${country.capital ? country.capital[0] : 'N/A'}</td>
-                <td>${country.population.toLocaleString()}</td>
-                <td>${country.region}</td>
-                <td>${country.subregion}</td>
-            </tr>
-        `;
-        tableBody.innerHTML = row;
-        table.style.display = 'table';
-    } else {
-        alert("Country not found.");
-        table.style.display = 'none';
-    }
+      const data = await response.json();
+      console.log(data)
+
+      if (data.results && data.results.length > 0) {
+          data.results.forEach(station => {
+              const row = `
+                  <tr>
+                      <td>${station.id}</td>
+                      <td>${station.name || 'N/A'}</td>
+                      <td>${station.state}</td>
+                      <td>${station.latitude || 'N/A'}</td>
+                      <td>${station.longitude || 'N/A'}</td>
+                  </tr>
+              `;
+              tableBody.insertAdjacentHTML('beforeend', row);
+          });
+          table.style.display = 'table';
+      } else {
+          alert("No station data found.");
+      }
+  } catch (error) {
+      alert(error.message);
+      table.style.display = 'none';
   }
-})
+}
