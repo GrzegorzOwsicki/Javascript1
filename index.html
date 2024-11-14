@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOAA Datasets</title>
+    <title>NOAA Climate Data</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -19,76 +19,102 @@
             max-width: 800px;
         }
         th, td {
-            padding: 18px;
+            padding: 8px;
             border: 1px solid #ddd;
             text-align: center;
         }
         th {
             background-color: #f2f2f2;
         }
-        button {
-            padding: 10px;
-            margin-top: 20px;
-            font-size: 16px;
+        input, button {
+            margin: 5px;
+            padding: 8px;
         }
     </style>
 </head>
 <body>
 
-    <h2>Datasets</h2>
-    <button onclick="fetchDatasets()">Load Datasets</button>
+    <h2>NOAA Climate Data Search</h2>
+    
+    <!-- Form for setting parameters -->
+    <label>Dataset ID:</label>
+    <input type="text" id="datasetId" placeholder="e.g., GHCND">
+    
+    <label>Location ID (ZIP):</label>
+    <input type="text" id="locationId" placeholder="e.g., ZIP:28801">
+    
+    <label>Start Date:</label>
+    <input type="date" id="startDate">
+    
+    <label>End Date:</label>
+    <input type="date" id="endDate">
+    
+    <button onclick="fetchClimateData()">Search</button>
 
-    <table id="datasetsTable" style="display: none;">
+    <!-- Table for displaying climate data results -->
+    <table id="climateTable" style="display: none;">
         <thead>
             <tr>
-                <th>Dataset ID</th>
-                <th>Name</th>
-                <th>Start Date</th>
-                <th>End Date</th>
+                <th>Date</th>
+                <th>Data Type</th>
+                <th>Value</th>
+                <th>Station ID</th>
             </tr>
         </thead>
         <tbody id="tableBody"></tbody>
     </table>
 
     <script>
-        async function fetchDatasets() {
-            const table = document.getElementById('datasetsTable');
-            const tableBody = document.getElementById('tableBody');
-            tableBody.innerHTML = ''; 
+        async function fetchClimateData() {
+            const datasetId = document.getElementById('datasetId').value.trim();
+            const locationId = document.getElementById('locationId').value.trim();
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (!datasetId || !locationId || !startDate || !endDate) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            const url = `https://www.ncei.noaa.gov/cdo-web/api/v2/data?datasetid=${datasetId}&locationid=${locationId}&startdate=${startDate}&enddate=${endDate}`;
 
             try {
-                const response = await fetch("https://www.ncei.noaa.gov/cdo-web/api/v2/datasets", {
+                const response = await fetch(url, {
                     headers: {
                         'token': 'fVNoeJAttptGtGSqRfcoASxKbSmWOnSp'
                     }
                 });
 
                 if (!response.ok) {
-                    throw new Error("Error fetching datasets.");
+                    throw new Error("Error fetching climate data.");
                 }
 
                 const data = await response.json();
                 
+                // Display table if there are results
+                const table = document.getElementById('climateTable');
+                const tableBody = document.getElementById('tableBody');
+                tableBody.innerHTML = ''; // Clear previous data
+
                 if (data.results && data.results.length > 0) {
-                    data.results.forEach(dataset => {
+                    data.results.forEach(record => {
                         const row = `
                             <tr>
-                                <td>${dataset.id}</td>
-                                <td>${dataset.name}</td>
-                                <td>${dataset.mindate}</td>
-                                <td>${dataset.maxdate}</td>
-                               
+                                <td>${record.date}</td>
+                                <td>${record.datatype}</td>
+                                <td>${record.value}</td>
+                                <td>${record.station}</td>
                             </tr>
                         `;
                         tableBody.insertAdjacentHTML('beforeend', row);
                     });
                     table.style.display = 'table';
                 } else {
-                    alert("No datasets found.");
+                    alert("No climate data found for the given parameters.");
                 }
             } catch (error) {
                 alert(error.message);
-                table.style.display = 'none';
+                document.getElementById('climateTable').style.display = 'none';
             }
         }
     </script>
