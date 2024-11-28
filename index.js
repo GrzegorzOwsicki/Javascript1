@@ -42,6 +42,29 @@ app.get('/math/circle/:r', (req, res) => {
   
     res.json(result);
   })
+
+
+  app.get('/math/power/:base/:exponent', (req, res) => {
+    const base = parseFloat(req.params.base);
+    const exponent  = parseFloat(req.params.exponent);
+  
+    if (isNaN(base) || isNaN(exponent)) {
+      return res.status(400).json({ error: 'Invalid input' });
+    }
+    const power = Math.pow(base, exponent);
+  
+    let root = null;
+    if (req.query.root === 'true'){
+      root  = Math.sqrt(base)
+    }
+  
+    const result = {
+      power:power,
+      ...(root !== null && { root: root })
+    };
+  
+    res.json(result);
+  })
 // start the server
 app.listen(3000, () => {
   console.log('Server started on port 3000');
