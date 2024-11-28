@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Joke App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #joke-container {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    .joke, .response {
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Random Joke Generator</h1>
+  <p>Select a category to get a random joke:</p>
+
+  <!-- Przyciski dla kategorii -->
+  <button onclick="fetchJoke('funnyJoke')">Funny Joke</button>
+  <button onclick="fetchJoke('lameJoke')">Lame Joke</button>
+
+  <!-- Kontener na żarty -->
+  <div id="joke-container">
+    <p class="joke"></p>
+    <p class="response"></p>
+  </div>
+
+  <script>
+    const apiUrl = 'http://localhost:3000/jokebook/joke';
+
+    // Funkcja pobierająca żart z wybranej kategorii
+    async function fetchJoke(category) {
+      try {
+        // Pobierz dane z API
+        const response = await fetch(`${apiUrl}/${category}`);
+        
+        // Sprawdź, czy odpowiedź jest poprawna
+        if (!response.ok) {
+          const errorData = await response.json();
+          document.getElementById('joke-container').innerHTML = `<p style="color: red;">${errorData.error}</p>`;
+          return;
+        }
+
+        // Pobierz dane JSON
+        const data = await response.json();
+
+        // Wyświetl żart w kontenerze
+        document.querySelector('.joke').textContent = data.joke || '';
+        document.querySelector('.response').textContent = data.response || '';
+      } catch (error) {
+        // Obsługa błędów
+        document.getElementById('joke-container').innerHTML = `<p style="color: red;">Error fetching joke: ${error.message}</p>`;
+      }
+    }
+  </script>
+
+</body>
+</html>
