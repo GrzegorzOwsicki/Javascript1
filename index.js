@@ -1,5 +1,7 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
+app.use(cors());
 
 app.get('/math/circle/:r', (req, res) => {
   //TODO1  
@@ -83,7 +85,7 @@ app.get('/math/circle/:r', (req, res) => {
     res.json({ categories });
   });
 
-  
+
   app.get('/jokebook/joke/:category', (req, res) => {
     const category = req.params.category;
 
